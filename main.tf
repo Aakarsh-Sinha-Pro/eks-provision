@@ -62,10 +62,6 @@ module "eks" {
   # Bypasses creation of a new KMS Key (which also requires IAM permissions)
   create_node_security_group = true
   create_security_group = true # FIXED: Blocks control plane SG creation
-  security_group_id     = module.vpc.default_security_group_id # reuses VPC group
-
-  create_kms_key = false
-  encryption_config = null
 
   endpoint_public_access = true
 
@@ -80,7 +76,7 @@ module "eks" {
   # vpc_id     = module.vpc.vpc_id
   # subnet_ids = module.vpc.private_subnets
 
-  vpc_id = "3af53251"
+  vpc_id = "vpc-3af53251"
   subnet_ids = ["subnet-03426cca90ce6d80b", "subnet-003f5e1c0abc2ff75", "subnet-0ec2990e4c42fb65e"]
 
   eks_managed_node_groups = {
