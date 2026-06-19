@@ -23,31 +23,31 @@ locals {
 #   special = false
 # }
 
-module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "5.8.1"
+# module "vpc" {
+#   source  = "terraform-aws-modules/vpc/aws"
+#   version = "5.8.1"
 
-  name = "eks-aakarsh-vpc"
+#   name = "eks-aakarsh-vpc"
 
-  cidr = "10.0.0.0/16"
-  # azs  = slice(data.aws_availability_zones.available.names, 0, 3)
-  azs = ["us-east-2a", "us-east-2b", "us-east-2c"]
+#   cidr = "10.0.0.0/16"
+#   # azs  = slice(data.aws_availability_zones.available.names, 0, 3)
+#   azs = ["us-east-2a", "us-east-2b", "us-east-2c"]
 
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+#   private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+#   public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
 
-  enable_nat_gateway   = true
-  single_nat_gateway   = true
-  enable_dns_hostnames = true
+#   enable_nat_gateway   = true
+#   single_nat_gateway   = true
+#   enable_dns_hostnames = true
 
-  public_subnet_tags = {
-    "kubernetes.io/role/elb" = 1
-  }
+#   public_subnet_tags = {
+#     "kubernetes.io/role/elb" = 1
+#   }
 
-  private_subnet_tags = {
-    "kubernetes.io/role/internal-elb" = 1
-  }
-}
+#   private_subnet_tags = {
+#     "kubernetes.io/role/internal-elb" = 1
+#   }
+# }
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
@@ -57,7 +57,7 @@ module "eks" {
   kubernetes_version = "1.35"
 
   create_iam_role = false  # Tells Terraform NOT to create the control plane role
-  iam_role_arn    = "arn:aws:iam::691879165105:role/CCL-EKS-CLUSTER" # Use existing control plane role
+  iam_role_arn    = "arn:aws:iam::691879165105:role/CCL-EKS-Role" # Use existing control plane role
 
   # Bypasses creation of a new KMS Key (which also requires IAM permissions)
   create_node_security_group = true
@@ -69,7 +69,7 @@ module "eks" {
 
   endpoint_public_access = true
 
-  enable_cluster_creator_admin_permissions = false
+  enable_cluster_creator_admin_permissions = true
 
   # cluster_addons = {
   #   aws-ebs-csi-driver = {
@@ -77,8 +77,11 @@ module "eks" {
   #   }
   # }
 
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
+  # vpc_id     = module.vpc.vpc_id
+  # subnet_ids = module.vpc.private_subnets
+
+  vpc_id = "3af53251"
+  subnet_ids = ["subnet-03426cca90ce6d80b", "subnet-003f5e1c0abc2ff75", "subnet-0ec2990e4c42fb65e"]
 
   eks_managed_node_groups = {
     one = {
