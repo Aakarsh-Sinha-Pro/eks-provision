@@ -60,8 +60,8 @@ module "eks" {
   iam_role_arn    = "arn:aws:iam::691879165105:role/CCL-EKS-CLUSTER" # Use existing control plane role
 
   # Bypasses creation of a new KMS Key (which also requires IAM permissions)
-  create_node_security_group = false
-  create_security_group = false # FIXED: Blocks control plane SG creation
+  create_node_security_group = true
+  create_security_group = true # FIXED: Blocks control plane SG creation
   security_group_id     = module.vpc.default_security_group_id # reuses VPC group
 
   create_kms_key = false
