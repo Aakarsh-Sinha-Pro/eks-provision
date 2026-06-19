@@ -15,19 +15,19 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  cluster_name = "education-eks-${random_string.suffix.result}"
+  cluster_name = "eks-aakarsh-cluster"
 }
 
-resource "random_string" "suffix" {
-  length  = 8
-  special = false
-}
+# resource "random_string" "suffix" {
+#   length  = 8
+#   special = false
+# }
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.8.1"
 
-  name = "education-vpc"
+  name = "eks-aakarsh-vpc"
 
   cidr = "10.0.0.0/16"
   azs  = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -50,27 +50,33 @@ module "vpc" {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "20.8.5"
+  version = "~> 21.0"
 
-  cluster_name    = local.cluster_name
-  cluster_version = "1.29"
+  name    = local.cluster_name
+  kubernetes_version = "1.35"
 
-  cluster_endpoint_public_access           = true
+  create_iam_role = false  # Tells Terraform NOT to create the control plane role
+  iam_role_arn    = "arn:aws:iam::691879165105:role/CCL-EKS-CLUSTER" # Use existing control plane role
+
+  # Bypasses creation of a new KMS Key (which also requires IAM permissions)
+  create_node_security_group = false
+  create_security_group = false # FIXED: Blocks control plane SG creation
+  security_group_id     = module.vpc.default_security_group_id # reuses VPC group
+
+  create_kms_key = false
+  encryption_config = null
+
+  endpoint_public_access = true
   enable_cluster_creator_admin_permissions = true
 
-  cluster_addons = {
-    aws-ebs-csi-driver = {
-      service_account_role_arn = module.irsa-ebs-csi.iam_role_arn
-    }
-  }
+  # cluster_addons = {
+  #   aws-ebs-csi-driver = {
+  #     service_account_role_arn = module.irsa-ebs-csi.iam_role_arn
+  #   }
+  # }
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
-
-  eks_managed_node_group_defaults = {
-    ami_type = "AL2_x86_64"
-
-  }
 
   eks_managed_node_groups = {
     one = {
@@ -81,6 +87,10 @@ module "eks" {
       min_size     = 1
       max_size     = 3
       desired_size = 2
+
+      ami_type = "AL2023_x86_64_STANDARD"
+      create_iam_role = false # Tells Terraform NOT to create new node roles
+      iam_role_arn    = "arn:aws:iam::691879165105:role/CCL-EKS-NodeRole" # Use existing node group role
     }
 
     two = {
@@ -91,23 +101,27 @@ module "eks" {
       min_size     = 1
       max_size     = 2
       desired_size = 1
+
+      ami_type = "AL2023_x86_64_STANDARD"
+      create_iam_role = false # Tells Terraform NOT to create new node roles
+      iam_role_arn    = "arn:aws:iam::691879165105:role/CCL-EKS-NodeRole" # Use existing node group role
     }
   }
 }
 
 
-# https://aws.amazon.com/blogs/containers/amazon-ebs-csi-driver-is-now-generally-available-in-amazon-eks-add-ons/ 
-data "aws_iam_policy" "ebs_csi_policy" {
-  arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
-}
+# # https://aws.amazon.com/blogs/containers/amazon-ebs-csi-driver-is-now-generally-available-in-amazon-eks-add-ons/ 
+# data "aws_iam_policy" "ebs_csi_policy" {
+#   arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+# }
 
-module "irsa-ebs-csi" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version = "5.39.0"
+# module "irsa-ebs-csi" {
+#   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
+#   version = "5.39.0"
 
-  create_role                   = true
-  role_name                     = "AmazonEKSTFEBSCSIRole-${module.eks.cluster_name}"
-  provider_url                  = module.eks.oidc_provider
-  role_policy_arns              = [data.aws_iam_policy.ebs_csi_policy.arn]
-  oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:ebs-csi-controller-sa"]
-}
+#   create_role                   = true
+#   role_name                     = "AmazonEKSTFEBSCSIRole-${module.eks.cluster_name}"
+#   provider_url                  = module.eks.oidc_provider
+#   role_policy_arns              = [data.aws_iam_policy.ebs_csi_policy.arn]
+#   oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:ebs-csi-controller-sa"]
+# }
