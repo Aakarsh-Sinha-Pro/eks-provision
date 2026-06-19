@@ -7,12 +7,12 @@ provider "aws" {
 
 # Filter out local zones, which are not currently supported 
 # with managed node groups
-data "aws_availability_zones" "available" {
-  filter {
-    name   = "opt-in-status"
-    values = ["opt-in-not-required"]
-  }
-}
+# data "aws_availability_zones" "available" {
+#   filter {
+#     name   = "opt-in-status"
+#     values = ["opt-in-not-required"]
+#   }
+# }
 
 locals {
   cluster_name = "eks-aakarsh-cluster"
@@ -30,7 +30,8 @@ module "vpc" {
   name = "eks-aakarsh-vpc"
 
   cidr = "10.0.0.0/16"
-  azs  = slice(data.aws_availability_zones.available.names, 0, 3)
+  # azs  = slice(data.aws_availability_zones.available.names, 0, 3)
+  azs = ["us-east-2a", "us-east-2b", "us-east-2c"]
 
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
   public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
@@ -67,7 +68,8 @@ module "eks" {
   encryption_config = null
 
   endpoint_public_access = true
-  enable_cluster_creator_admin_permissions = true
+
+  enable_cluster_creator_admin_permissions = false
 
   # cluster_addons = {
   #   aws-ebs-csi-driver = {
