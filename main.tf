@@ -15,7 +15,7 @@ provider "aws" {
 # }
 
 locals {
-  cluster_name = "eks-aakarsh-cluster-v3"
+  cluster_name = "eks-aakarsh-cluster-v4"
 }
 
 # resource "random_string" "suffix" {
@@ -64,10 +64,9 @@ module "eks" {
   create_security_group = true # FIXED: Blocks control plane SG creation
 
   enable_irsa = false
-
   endpoint_public_access = true
 
-  enable_cluster_creator_admin_permissions = true
+  enable_cluster_creator_admin_permissions = false
 
   # cluster_addons = {
   #   aws-ebs-csi-driver = {
