@@ -63,6 +63,8 @@ module "eks" {
   create_node_security_group = true
   create_security_group = true # FIXED: Blocks control plane SG creation
 
+  enable_irsa = false
+
   endpoint_public_access = true
 
   enable_cluster_creator_admin_permissions = true
