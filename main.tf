@@ -107,26 +107,26 @@ module "eks" {
 
       min_size     = 1
       max_size     = 3
-      desired_size = 2
-
-      ami_type = "AL2023_x86_64_STANDARD"
-      create_iam_role = false # Tells Terraform NOT to create new node roles
-      iam_role_arn    = "arn:aws:iam::691879165105:role/CCL-EKS-NodeRole" # Use existing node group role
-    }
-
-    two = {
-      name = "node-group-2"
-
-      instance_types = ["t3.small"]
-
-      min_size     = 1
-      max_size     = 2
       desired_size = 1
 
       ami_type = "AL2023_x86_64_STANDARD"
       create_iam_role = false # Tells Terraform NOT to create new node roles
       iam_role_arn    = "arn:aws:iam::691879165105:role/CCL-EKS-NodeRole" # Use existing node group role
     }
+
+    # two = {
+    #   name = "node-group-2"
+
+    #   instance_types = ["t3.small"]
+
+    #   min_size     = 1
+    #   max_size     = 2
+    #   desired_size = 1
+
+    #   ami_type = "AL2023_x86_64_STANDARD"
+    #   create_iam_role = false # Tells Terraform NOT to create new node roles
+    #   iam_role_arn    = "arn:aws:iam::691879165105:role/CCL-EKS-NodeRole" # Use existing node group role
+    # }
   }
 }
 
