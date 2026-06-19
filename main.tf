@@ -81,6 +81,18 @@ module "eks" {
   vpc_id = "vpc-3af53251"
   subnet_ids = ["subnet-03426cca90ce6d80b", "subnet-003f5e1c0abc2ff75", "subnet-0ec2990e4c42fb65e"]
 
+  addons = {
+    vpc-cni = {
+      most_recent = true
+    }
+    kube-proxy = {
+      most_recent = true
+    }
+    coredns = {
+      most_recent = true
+    }
+  }
+
   eks_managed_node_groups = {
     one = {
       name = "node-group-1"
