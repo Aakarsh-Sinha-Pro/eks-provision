@@ -68,6 +68,23 @@ module "eks" {
 
   enable_cluster_creator_admin_permissions = false
 
+  authentication_mode = "API_AND_CONFIGMAP"
+
+  access_entries = {
+    admin_user = {
+      principal_arn     = "arn:aws:iam::691879165105:user/2492176"
+      type              = "STANDARD"
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:aws:iam::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
+
   # cluster_addons = {
   #   aws-ebs-csi-driver = {
   #     service_account_role_arn = module.irsa-ebs-csi.iam_role_arn
