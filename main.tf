@@ -213,7 +213,7 @@ module "eks" {
   enable_cluster_creator_admin_permissions = false
 
   # FIXED: Removed the space to match correct AWS API parameters
-  authentication_mode = "API_AND_CONFIGMAP"
+  authentication_mode = "API_AND_CONFIG_MAP"
 
   # FIXED: Remapped with proper structural types and accurate system policy ARNs
   access_entries = {
