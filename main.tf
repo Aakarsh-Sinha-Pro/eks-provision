@@ -286,7 +286,7 @@ provider "aws" {
 }
 
 locals {
-  cluster_name = "eks-aakarsh-cluster-v9"
+  cluster_name = "eks-aakarsh-cluster-v10"
 }
 
 module "eks" {
