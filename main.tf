@@ -362,15 +362,15 @@ module "eks" {
   }
 }
 
-# Isolated addon resources with explicit creation dependencies
-resource "aws_eks_addon" "addons" {
-  for_each = toset(["vpc-cni", "kube-proxy", "coredns"])
+# # Isolated addon resources with explicit creation dependencies
+# resource "aws_eks_addon" "addons" {
+#   for_each = toset(["vpc-cni", "kube-proxy", "coredns"])
 
-  cluster_name                = module.eks.cluster_name
-  addon_name                  = each.key
-  resolve_conflicts_on_create = "OVERWRITE"
-  resolve_conflicts_on_update = "OVERWRITE"
+#   cluster_name                = module.eks.cluster_name
+#   addon_name                  = each.key
+#   resolve_conflicts_on_create = "OVERWRITE"
+#   resolve_conflicts_on_update = "OVERWRITE"
 
-  # Forces addons to wait until node groups settle to prevent initialization hangs
-  depends_on = [module.eks.eks_managed_node_groups]
-}
+#   # Forces addons to wait until node groups settle to prevent initialization hangs
+#   depends_on = [module.eks.eks_managed_node_groups]
+# }
