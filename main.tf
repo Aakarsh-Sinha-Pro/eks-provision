@@ -189,7 +189,7 @@ provider "aws" {
 }
 
 locals {
-  cluster_name = "eks-aakarsh-cluster-v6"
+  cluster_name = "eks-aakarsh-cluster-v7"
 }
 
 module "eks" {
