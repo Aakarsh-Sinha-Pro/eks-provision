@@ -15,7 +15,7 @@ provider "aws" {
 # }
 
 locals {
-  cluster_name = "eks-aakarsh-cluster-v4"
+  cluster_name = "eks-aakarsh-cluster-v5"
 }
 
 # resource "random_string" "suffix" {
